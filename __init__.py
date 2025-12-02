@@ -3,7 +3,13 @@ from flask import render_template
 from flask import json
 from datetime import datetime
 from urllib.request import urlopen
+
 import sqlite3
+
+import requests
+from datetime import datetime
+from flask import Flask, jsonify, render_template
+
                                                                                                                                        
 app = Flask(__name__)                                                                                                                  
                                                                                                                                        
@@ -34,6 +40,36 @@ def histogramme():
 @app.route("/contact/")
 def contact():
     return render_template("contact.html")
+
+@app.route('/extract-minutes/<date_string>')
+def extract_minutes(date_string):
+    date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
+    minutes = date_object.minute
+    return jsonify({'minutes': minutes})
+
+@app.route('/commits_data/')
+def commits_data():
+    url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
+    response = requests.get(url)
+    commits = response.json()
+
+    minutes_count = {}
+
+    for commit in commits:
+        commit_obj = commit.get('commit', {})
+        author = commit_obj.get('author', {})
+        date_str = author.get('date')  # ex: "2024-02-11T11:57:27Z"
+        if date_str:
+            date_object = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
+            minute = date_object.minute
+            minutes_count[minute] = minutes_count.get(minute, 0) + 1
+
+    # transformer en liste pour Google Charts : [{minute: 12, count: 3}, ...]
+    results = []
+    for minute, count in sorted(minutes_count.items()):
+        results.append({'minute': minute, 'count': count})
+
+    return jsonify(results=results)
 
   
 if __name__ == "__main__":
