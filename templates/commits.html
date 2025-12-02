@@ -13,7 +13,7 @@
       google.charts.setOnLoadCallback(loadData);
 
       function loadData() {
-        fetch("/commits/")
+        fetch("/commits_data/")
           .then(response => response.json())
           .then(data => drawChart(data));
       }
