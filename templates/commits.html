@@ -1,44 +1,43 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Commits par minute</title>
+    <title>Commits GitHub</title>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
     <h2>Nombre de commits par minute</h2>
-    <div id="commits_chart" style="width: 900px; height: 500px;"></div>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
 
     <script>
-      google.charts.load('current', { packages: ['corechart'] });
-      google.charts.setOnLoadCallback(loadCommits);
+      google.charts.load("current", { packages: ["corechart"] });
+      google.charts.setOnLoadCallback(loadData);
 
-      function loadCommits() {
-        fetch('/commits_data/')
+      function loadData() {
+        fetch("/commits/")
           .then(response => response.json())
-          .then(data => {
-            drawCommitsChart(data);
-          });
+          .then(data => drawChart(data));
       }
 
-      function drawCommitsChart(data) {
+      function drawChart(data) {
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('number', 'Minute');
-        dataTable.addColumn('number', 'Nombre de commits');
+        dataTable.addColumn("number", "Minute");
+        dataTable.addColumn("number", "Commits");
 
         data.results.forEach(entry => {
           dataTable.addRow([entry.minute, entry.count]);
         });
 
         var options = {
-          title: 'Commits effectués (minute par minute)',
-          hAxis: { title: 'Minute (0-59)' },
-          vAxis: { title: 'Nombre de commits' },
-          legend: { position: 'none' }
+          title: "Commits GitHub par minute",
+          hAxis: { title: "Minute", minValue: 0, maxValue: 59 },
+          vAxis: { title: "Nombre de commits" },
+          legend: "none"
         };
 
         var chart = new google.visualization.ColumnChart(
-          document.getElementById('commits_chart')
+          document.getElementById("chart_div")
         );
+
         chart.draw(dataTable, options);
       }
     </script>
