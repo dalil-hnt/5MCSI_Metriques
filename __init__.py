@@ -41,7 +41,7 @@ def histogramme():
 def contact():
     return render_template("contact.html")
 
-@app.route('/commits/')
+@app.route('/commits_data/')
 def commits():
     # Récupération des commits depuis le repo d'origine
     response = urlopen("https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits")
@@ -69,7 +69,7 @@ def commits():
 
     return jsonify(results=results)
 
-@app.route("/commits_graph/")
+@app.route("/commits/")
 def commits_graph():
     return render_template("commits.html")
 
